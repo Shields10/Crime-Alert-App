@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap:">
+  <title>Crime Rating App</title>
+  <link rel="stylesheet" href="packages/core/css/framework7.bundle.min.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="apple-touch-icon" href="img/f7-icon-square.png">
+  <link rel="icon" href="img/f7-icon.png">
+</head>
+<body class="color-theme-blue" >
+    <!-- App root element -->
+    <div id="app">
+
+      <!-- Your main view, should have "view-main" class -->
+      <div class="view view-main ios-edges">
+        <!-- Initial Page, "data-name" contains page name -->
+        <div class="page">
+
+          <!-- Top Navbar -->
+          <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+              <div class="title sliding">Crime Rating App</div>
+            </div>
+          </div>
+
+          <!-- Scrollable page content -->
+          <div class="page-content display-flex flex-direction-column justify-content-center">
+
+              
+          
+                    <div class="card">
+
+                          <div class="card-content card-content-padding">
+                        
+                                    <a href="#" class="button button-large button-raised button-fill" style="width:100%;" id="loginbutton" onclick="javascript:fnSignIn()">Sign-In</a>
+
+                           
+
+                                      <p class="text-align-center"> OR</p>
+
+                          
+                              <a href="#" class="button   button-large button-raised button-fill color-red" style="width:100%;"  onclick="javascript:fnRegister()">Register</a>
+
+                        
+                        </div>
+                    </div>
+                  </div>
+          </div>
+                    <form  method="GET" id="indexform" >
+                        <input type = "hidden" name = "uid" value=""><input type = "hidden" name = "upwd" value="">
+                    </form>              
+            
+        </div>
+      </div>
+    </div>
+    
+    <!-- Cordova -->
+ <!-- Include cordova.js in all files for final compilation   --> 
+    <script src="cordova.js"></script>
+    <script src="packages/core/js/framework7.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="packages/core/components/sweetalert/sweetalert.min.js"></script>   
+
+   <script src="js/AESUtil.js"></script>
+
+    
+  <script>
+      //app.utils.colorThemeCSSProperties('#f00');
+      //** start standard app initiation for each pages
+        var mainView = app.views.create('.view-main');
+      //** end standard app initiation for each pages
+      //$('input[name=weekday][value=1]').attr("checked", "checked");
+   
+
+        
+
+      function fnSignIn(){
+
+        $$('#indexform').attr('action', 'login.html');     $$( "#indexform" ).submit();
+      }
+
+      function fnRegister(){
+
+        $$('#indexform').attr('action', 'register.html');     $$( "#indexform" ).submit();
+      }
+      
+
+
+
+
+ </script>    
+</body>
+</html>
