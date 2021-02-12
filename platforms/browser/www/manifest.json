@@ -1,8 +1,8 @@
 {
   "background_color": "#FFF",
   "display": "standalone",
-  "name": "NTSA Enforce",
-  "short_name": "NTSA Enforce",
+  "name": "Crime Detecting App",
+  "short_name": "Crime Detecting App",
   "version": "io.cordova.hellocordova",
   "description": "A sample Apache Cordova application that responds to the deviceready event.",
   "author": "Apache Cordova Team",

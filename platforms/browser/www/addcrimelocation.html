@@ -44,7 +44,6 @@ body {
 }
 
 .pac-card {
-  margin: 10px 10px 0 0;
   border-radius: 2px 0 0 2px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -78,7 +77,7 @@ body {
   margin-left: 12px;
   padding: 0 11px 0 13px;
   text-overflow: ellipsis;
-  width: 400px;
+  
 }
 
 #pac-input:focus {
@@ -107,7 +106,7 @@ body {
                   <ul>
 
                     <li>
-                      <a href="#" id="lnkleftlogout" class="panel-close">Logout</a>
+                      <a href="#" id="lnkleftlogout"  >Logout</a>
                     </li>
                   </ul>
                    <input type="hidden" id="userid" name="userid" value=""/>
@@ -140,39 +139,26 @@ body {
 
       <!-- Scrollable page content -->
         
-      <div class="pac-card" id="pac-card" style="right: 0%;"></div>
+      <div class="pac-card" id="pac-card" style="right: 0%;">
         <div>
-          <div id="title" style="background-color: #FF3B30;">Search Location To Add</div>
-          <div id="type-selector" class="pac-controls">
-            <input
-              type="radio"
-              name="type"
-              id="changetype-all"
-              checked="checked"
-            />
-            <label for="changetype-all">All</label>
-  
-            <input type="radio" name="type" id="changetype-establishment" />
-            <label for="changetype-establishment">Establishments</label>
-  
-            <input type="radio" name="type" id="changetype-address" />
-            <label for="changetype-address">Addresses</label>
-  
-            <input type="radio" name="type" id="changetype-geocode" />
-            <label for="changetype-geocode">Geocodes</label>
+          <div id="title" style="background-color: #FF3B30;">  <i class="icon f7-icons " onclick="javascript:fnBack()">arrow_left </i>Add Location</div>
+          <div class="item-inner">
+            <div class="item-title item-label">Search Location</div>
+            <div class="item-input-wrap">
+              <input type="text" id="pac-input" placeholder="Search location and click enter to search">
+              <span class="input-clear-button"></span>
+            </div>
           </div>
-          <br />
-          <div id="strict-bounds-selector" class="pac-controls">
-            <input type="checkbox" id="use-location-bias" value="" checked />
-            <label for="use-location-bias">Bias to map viewport</label>
-  
-            <input type="checkbox" id="use-strict-bounds" value="" />
-            <label for="use-strict-bounds">Strict bounds</label>
-          </div>
+        
+
+          <p class="text-align-center"> OR</p>
+
+                          
+          <button  class="button button-small button-round color-red" style="width:100%;"  onclick="javascript:fnGetGeoLocation()" style="font-size: xx-small;">Click Here To add Your Current Location</button>
+
+
         </div>
-        <div id="pac-container">
-          <input id="pac-input" type="text" placeholder="Enter a location" />
-        </div>
+        
       </div>
       <div id="map"></div>
       <div id="infowindow-content">
@@ -181,17 +167,19 @@ body {
       </div>
                       
                 
-                    <div class="fab fab-right-bottom color-red">
-                        <a href="#">
-                            <i class="icon f7-icons ">plus</i>
-                            <i class="icon f7-icons ">xmark</i>
-                    
-                        </a>
-                        <div class="fab-buttons fab-buttons-top">
-                          <a class="fab-label-button" href="#"><span style="font-size: 8px;font-weight: bolder;"> Click here</span><span class="fab-label">Save Location</span></a>
-                      
-                        </div>
-                      </div>
+      <div class="fab fab-right-bottom color-red">
+        <a href="#">
+            <i class="icon f7-icons ">floppy_disk
+            </i>
+            <i class="icon f7-icons ">floppy_disk
+            </i>
+    
+        </a>
+        <div class="fab-buttons fab-buttons-top">
+          <a class="fab-label-button" href="#"><span style="font-size: 8px;font-weight: bolder;" onclick="javascript: fnSaveLocation()"> Click here</span><span class="fab-label">Save Lovation</span></a>
+      
+        </div>
+      </div>
               
               
        
@@ -213,7 +201,15 @@ body {
  <script src="js/AESUtil.js"></script>
 
  
+   <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+   <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-app.js"></script>
+
+   <!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+   <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-analytics.js"></script>
  
+   <!-- Add Firebase products that you want to use -->
+   <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-auth.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-firestore.js"></script>
     
   <script>
 
@@ -221,15 +217,295 @@ body {
       var latitude=0;
       var longitude=0;
       $(document).ready(function(){
-      // alert("in geo location");
+
+      
+    });
+      
+      //app.utils.colorThemeCSSProperties('#f00');
+      //** start standard app initiation for each pages
+       // var mainView = app.views.create('.view-main');
+      //** end standard app initiation for each pages
+      //$('input[name=weekday][value=1]').attr("checked", "checked");
+
+
+//       function initMap() {} // now it IS a function and it is in global
+// console.log("lat is"+latitude);
+// console.log("long is"+longitude);
+// $(() => {
+//   initMap = function() {
+//     const map = new google.maps.Map(document.getElementById("map"), {
+//     center: { lat: latitude, lng: longitude },
+//     zoom: 13,
+//   });
+//   const card = document.getElementById("pac-card");
+//   const input = document.getElementById("pac-input");
+//   console.log("input is"+input);
+//   const biasInputElement = document.getElementById("use-location-bias");
+//   const strictBoundsInputElement = document.getElementById("use-strict-bounds");
+//   const options = {
+//     componentRestrictions: { country: "us" },
+//     fields: ["formatted_address", "geometry", "name"],
+//     origin: map.getCenter(),
+//     strictBounds: false,
+//     types: ["establishment"],
+//   };
+//   map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+//   const autocomplete = new google.maps.places.Autocomplete(input, options);
+//   // Bind the map's bounds (viewport) property to the autocomplete object,
+//   // so that the autocomplete requests use the current map bounds for the
+//   // bounds option in the request.
+//   autocomplete.bindTo("bounds", map);
+//   const infowindow = new google.maps.InfoWindow();
+//   const infowindowContent = document.getElementById("infowindow-content");
+//   infowindow.setContent(infowindowContent);
+//   const marker = new google.maps.Marker({
+//     map,
+//     anchorPoint: new google.maps.Point(0, -29),
+//   });
+//   autocomplete.addListener("place_changed", () => {
+//     infowindow.close();
+//     marker.setVisible(false);
+//     const place = autocomplete.getPlace();
+
+//     if (!place.geometry || !place.geometry.location) {
+//       // User entered the name of a Place that was not suggested and
+//       // pressed the Enter key, or the Place Details request failed.
+//       window.alert("No details available for input: '" + place.name + "'");
+//       return;
+//     }
+
+//     // If the place has a geometry, then present it on a map.
+//     if (place.geometry.viewport) {
+//       map.fitBounds(place.geometry.viewport);
+//     } else {
+//       map.setCenter(place.geometry.location);
+//       map.setZoom(17);
+//     }
+//     marker.setPosition(place.geometry.location);
+//     marker.setVisible(true);
+//     infowindowContent.children["place-name"].textContent = place.name;
+//     infowindowContent.children["place-address"].textContent =
+//       place.formatted_address;
+//     infowindow.open(map, marker);
+//   });
+
+//   // Sets a listener on a radio button to change the filter type on Places
+//   // Autocomplete.
+//   function setupClickListener(id, types) {
+//     const radioButton = document.getElementById(id);
+//     radioButton.addEventListener("click", () => {
+//       autocomplete.setTypes(types);
+//       input.value = "";
+//     });
+//   }
+//   setupClickListener("changetype-all", []);
+//   setupClickListener("changetype-address", ["address"]);
+//   setupClickListener("changetype-establishment", ["establishment"]);
+//   setupClickListener("changetype-geocode", ["geocode"]);
+//   biasInputElement.addEventListener("change", () => {
+//     if (biasInputElement.checked) {
+//       autocomplete.bindTo("bounds", map);
+//     } else {
+//       // User wants to turn off location bias, so three things need to happen:
+//       // 1. Unbind from map
+//       // 2. Reset the bounds to whole world
+//       // 3. Uncheck the strict bounds checkbox UI (which also disables strict bounds)
+//       autocomplete.unbind("bounds");
+//       autocomplete.setBounds({ east: 180, west: -180, north: 90, south: -90 });
+//       strictBoundsInputElement.checked = biasInputElement.checked;
+//     }
+//     input.value = "";
+//   });
+//   strictBoundsInputElement.addEventListener("change", () => {
+//     autocomplete.setOptions({
+//       strictBounds: strictBoundsInputElement.checked,
+//     });
+
+//     if (strictBoundsInputElement.checked) {
+//       biasInputElement.checked = strictBoundsInputElement.checked;
+//       autocomplete.bindTo("bounds", map);
+//     }
+//     input.value = "";
+//   });
+//   }
+// })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ </script>   
+<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCedNpxsrE_L8ELr6c7wNRZbYR2FMBe03Q"></script> -->
+<script
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCedNpxsrE_L8ELr6c7wNRZbYR2FMBe03Q&libraries=places&v=weekly"
+></script>
+
+
+  
+<script>
+
+  // Set the configuration for your app
+  // TODO: Replace with your project's config object
+  var config = {
+    apiKey: "AIzaSyCedNpxsrE_L8ELr6c7wNRZbYR2FMBe03Q",
+    authDomain: "excellent-style-304214.firebaseapp.com",
+    // For databases not in the us-central1 location, databaseURL will be of the
+    // form https://[databaseName].[region].firebasedatabase.app.
+    // For example, https://your-database-123.europe-west1.firebasedatabase.app
+    databaseURL: "https://excellent-style-304214-default-rtdb.firebaseio.com/",
+    storageBucket: "excellent-style-304214.appspot.com"
+  };
+  firebase.initializeApp(config);
+
+
+
+  var lng=0;
+  var lat=0;
+function init() {
+  console.log("map is called");
+    var latlong = {lat: 0, lng:0};
+    console.log("latlong"+latlong);
+            var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 17,
+            center: latlong
+        });
+            var marker = new google.maps.Marker({
+                position: latlong,
+                map: map
+            });
+
+var searchBox = new google.maps.places.SearchBox(document.getElementById('pac-input'));
+map.controls[google.maps.ControlPosition.TOP_CENTER].push(document.getElementById('pac-input'));
+google.maps.event.addListener(searchBox, 'places_changed', function() {
+  searchBox.set('map', null);
+
+
+  var places = searchBox.getPlaces();
+
+  var bounds = new google.maps.LatLngBounds();
+  var i, place;
+  for (i = 0; place = places[i]; i++) {
+    (function(place) {
+      var marker = new google.maps.Marker({
+
+        position: place.geometry.location
+      });
+      marker.bindTo('map', searchBox, 'map');
+      google.maps.event.addListener(marker, 'map_changed', function() {
+        if (!this.getMap()) {
+          this.unbindAll();
+        }
+      });
+      bounds.extend(place.geometry.location);
+
+
+    }(place));
+
+    // get lat
+ lat = place.geometry.location.lat();
+// get lng
+ lng = place.geometry.location.lng();
+
+ console.log("lat is"+lat);
+ console.log("lng is"+lng);
+
+ 
+
+  }
+  map.fitBounds(bounds);
+  searchBox.set('map', map);
+  map.setZoom(Math.min(map.getZoom(),12));
+  const infowindow = new google.maps.InfoWindow();
+  const infowindowContent = document.getElementById("infowindow-content");
+
+
+});
+}
+google.maps.event.addDomListener(window, 'load', init);
+
+
+
+function fnSaveLocation(){
+
+  console.log("inside save location"+lat+" "+lng);
+
+  Swal.fire({
+                //title:'Confirmation',
+                  
+                title: 'Confirmation',   
+                text: ' Are you sure you want to add this location?',
+              showCancelButton: true,
+              showCancelButton: '<button style="width: 15px"></button>',
+	            confirmButtonColor: '#006400',
+	  	        cancelButtonColor: '#FF3B30', 
+	  	        cancelButtonText: 'No', 
+	  	        confirmButtonText: 'Yes',
+	  	        closeOnConfirm: true
+              }).then((result) => {
+              	if (result.value) {
+                
+              
+                 
+
+                  var latlong=lat+lng;
+                  firebase.database().ref('Crime-location/' + latlong).set({
+                    latitude: lat,
+                    longitude: lgnl
+                  }, (error) => {
+                    if (error) {
+                      // The write failed...
+
+                      Swal.fire({
+                        text:"There was a problem in saving location",
+                        icon:"error"
+                      })
+                    } else {
+                      // Data saved successfully!
+
+                      Swal.fire({
+                        text:"Location added sucessfully ",
+                        icon:"success",
+                        timer:2500
+                      }).then(function() {
+                        // Save UID on local storage
+                        $$('#loginform').attr('action', 'dashboard.html');     $$( "#loginform" ).submit();
+                      });
+                    }
+                  });
+
+
+                
+
+                }
+              });
+
+
+}
+
+
+
+function fnGetGeoLocation(){
+        // alert("in geo location");
     
-      var onSuccess = function(position) {
+        var onSuccess = function(position) {
         console.log("position "+position);
         latitude = position.coords.latitude;
         longitude = position.coords.longitude;
 
-        //alert("latitude"+latitude);
-        //alert("longitude"+longitude);
+        console.log("latitude"+latitude);
+        console.log("longitude"+longitude);
+
+        lat=latitude;
+        lat=longitude;
         
 
        /*    alert('Latitude: '          + position.coords.latitude          + '\n' +
@@ -250,133 +526,23 @@ body {
       }
 
       navigator.geolocation.getCurrentPosition(onSuccess, onError); 
-      
-    });
-      
-      //app.utils.colorThemeCSSProperties('#f00');
-      //** start standard app initiation for each pages
-       // var mainView = app.views.create('.view-main');
-      //** end standard app initiation for each pages
-      //$('input[name=weekday][value=1]').attr("checked", "checked");
+fnSaveLocation();
+
+}
 
 
-      function initMap() {} // now it IS a function and it is in global
+function fnBack(){
 
-$(() => {
-  initMap = function() {
-    const map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: latitude, lng: longitude },
-    zoom: 13,
-  });
-  const card = document.getElementById("pac-card");
-  const input = document.getElementById("pac-input");
-  const biasInputElement = document.getElementById("use-location-bias");
-  const strictBoundsInputElement = document.getElementById("use-strict-bounds");
-  const options = {
-    componentRestrictions: { country: "ke" },
-    fields: ["formatted_address", "geometry", "name"],
-    origin: map.getCenter(),
-    strictBounds: false,
-    types: ["establishment"],
-  };
-  map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
-  const autocomplete = new google.maps.places.Autocomplete(input, options);
-  // Bind the map's bounds (viewport) property to the autocomplete object,
-  // so that the autocomplete requests use the current map bounds for the
-  // bounds option in the request.
-  autocomplete.bindTo("bounds", map);
-  const infowindow = new google.maps.InfoWindow();
-  const infowindowContent = document.getElementById("infowindow-content");
-  infowindow.setContent(infowindowContent);
-  const marker = new google.maps.Marker({
-    map,
-    anchorPoint: new google.maps.Point(0, -29),
-  });
-  autocomplete.addListener("place_changed", () => {
-    infowindow.close();
-    marker.setVisible(false);
-    const place = autocomplete.getPlace();
+  $$('#loginform').attr('action', 'dashboard.html');     $$( "#loginform" ).submit();
 
-    if (!place.geometry || !place.geometry.location) {
-      // User entered the name of a Place that was not suggested and
-      // pressed the Enter key, or the Place Details request failed.
-      window.alert("No details available for input: '" + place.name + "'");
-      return;
-    }
-
-    // If the place has a geometry, then present it on a map.
-    if (place.geometry.viewport) {
-      map.fitBounds(place.geometry.viewport);
-    } else {
-      map.setCenter(place.geometry.location);
-      map.setZoom(17);
-    }
-    marker.setPosition(place.geometry.location);
-    marker.setVisible(true);
-    infowindowContent.children["place-name"].textContent = place.name;
-    infowindowContent.children["place-address"].textContent =
-      place.formatted_address;
-    infowindow.open(map, marker);
-  });
-
-  // Sets a listener on a radio button to change the filter type on Places
-  // Autocomplete.
-  function setupClickListener(id, types) {
-    const radioButton = document.getElementById(id);
-    radioButton.addEventListener("click", () => {
-      autocomplete.setTypes(types);
-      input.value = "";
-    });
-  }
-  setupClickListener("changetype-all", []);
-  setupClickListener("changetype-address", ["address"]);
-  setupClickListener("changetype-establishment", ["establishment"]);
-  setupClickListener("changetype-geocode", ["geocode"]);
-  biasInputElement.addEventListener("change", () => {
-    if (biasInputElement.checked) {
-      autocomplete.bindTo("bounds", map);
-    } else {
-      // User wants to turn off location bias, so three things need to happen:
-      // 1. Unbind from map
-      // 2. Reset the bounds to whole world
-      // 3. Uncheck the strict bounds checkbox UI (which also disables strict bounds)
-      autocomplete.unbind("bounds");
-      autocomplete.setBounds({ east: 180, west: -180, north: 90, south: -90 });
-      strictBoundsInputElement.checked = biasInputElement.checked;
-    }
-    input.value = "";
-  });
-  strictBoundsInputElement.addEventListener("change", () => {
-    autocomplete.setOptions({
-      strictBounds: strictBoundsInputElement.checked,
-    });
-
-    if (strictBoundsInputElement.checked) {
-      biasInputElement.checked = strictBoundsInputElement.checked;
-      autocomplete.bindTo("bounds", map);
-    }
-    input.value = "";
-  });
-  }
-})
+}
 
 
-
-
-
-
-
-// Search Function
-
-
-
- </script>   
-
-<script
-src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCedNpxsrE_L8ELr6c7wNRZbYR2FMBe03Q&callback=initMap&libraries=places&v=weekly"
-async
-></script>
+</script>
 
  
 </body>
 </html>
+
+
+
